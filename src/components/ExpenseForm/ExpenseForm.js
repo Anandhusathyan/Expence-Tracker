@@ -4,6 +4,7 @@ import styles from "./ExpenseForm.module.css";
 export default function ExpenseForm({ onAddExpense }) {
   const [text, setText] = useState("");
   const [amount, setAmount] = useState("");
+  const [error, setError] = useState('');
   const textInput = useRef(null);
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -14,6 +15,20 @@ export default function ExpenseForm({ onAddExpense }) {
     setText("");
     setAmount("");
     textInput.current?.focus();
+  };
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+
+    // Check if the typed value contains any numbers (0-9)
+    if (/\d/.test(value)) {
+      setError('Numbers are not allowed!');
+      // Optionally remove the number so it doesn't show in the input box
+      setText(value.replace(/[0-9]/g, ''));
+    } else {
+      setError(''); // Clear the error if no numbers are present
+      setText(value);
+    }
   };
 
   return (
@@ -27,9 +42,10 @@ export default function ExpenseForm({ onAddExpense }) {
         type="text"
         placeholder="Enter text..."
         value={text}
-        onChange={(event) => setText(event.target.value)}
+        onChange={handleChange}
         required
       />
+      {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{error}</p>}
       <div>
         <label htmlFor="expenseAmount">Amount</label>
         <div>(negative - expense, positive - income)</div>
